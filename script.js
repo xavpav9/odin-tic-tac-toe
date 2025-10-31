@@ -61,3 +61,17 @@ const gameboard = (function(size) {
 
   return { board, checkWin, playMove, resetBoard };
 })(3);
+
+createPlayer = function(name, symbol) {
+  const playerName = name;
+  let score = 0;
+
+  function addScore() { ++score; };
+  function getScore() { return score; };
+
+  function playMove(row, column) {
+    gameboard.playMove(row, column, symbol);
+  };
+
+  return { playerName, playMove, addScore, getScore }
+};
