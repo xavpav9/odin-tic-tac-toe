@@ -1,0 +1,31 @@
+*, *::after, *::before {
+  padding: 0px;
+  margin: 0px;
+  line-height: 1.5;
+}
+
+@font-face {
+  font-family: "Timeless";
+  src: url("fonts/Timeless-Normal.woff2") format("woff2"), url("fonts/Timeless-Normal.woff") format("woff");
+  font-style: none;
+  font-weight: none;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Timeless";
+  src: url("fonts/Timeless-Bold.woff2") format("woff2"), url("fonts/Timeless-Bold.woff") format("woff");
+  font-style: none;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  font-weight: 700;
+  font-family: "Timeless", system-ui, sans-serif;
+}
+
+:root * {
+  font-family: inherit;
+}
+
