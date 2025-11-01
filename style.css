@@ -31,7 +31,7 @@
 
 .gameboard-display {
   --box-size: 50px;
-  display: grid;
+  display: none;
   grid-template-rows: repeat(3, var(--box-size));
   grid-template-columns: repeat(3, var(--box-size));
   .box { }

@@ -168,6 +168,12 @@ screenController = (function() {
       updateScreen();
     });
   });
+
+  document.querySelector(".start-restart").addEventListener("click", evt => {
+    gameboardDisplay.style.display = "grid";
+    evt.target.textContent = "restart";
+    gameController.startGame();
+  });
   return { createBox, updateScreen, boxClickHandler, gameboardDisplay, };
 })();
 
@@ -177,7 +183,7 @@ gameController = (function() {
 
   function startGame() {
     gameboard.createBoard();
-    currentPlayer = 0;
+    currentPlayer = Math.floor(Math.random() * 2);
     screenController.updateScreen();
   };
 
