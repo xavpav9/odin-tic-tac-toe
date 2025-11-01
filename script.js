@@ -1,23 +1,42 @@
 const gameboard = (function(size) {
   const board = [];
+  const boardDOM = [];
   const boardSize = size;
-  for (let row = 0; row < boardSize; ++row) {
-    board.push([]);
-    for (let column = 0; column < boardSize; ++column) {
-      board[row].push("");
+
+  function createBoard() {
+    while (board.length !== 0) {
+      board.pop();
     };
-  };
+
+    while (boardDOM.length !== 0) {
+      boardDOM.pop();
+    };
+
+    for (let row = 0; row < boardSize; ++row) {
+      board.push([]);
+      for (let column = 0; column < boardSize; ++column) {
+        board[row].push("");
+      };
+    };
+
+    for (let row = 0; row < boardSize; ++row) {
+      boardDOM.push([]);
+      for (let column = 0; column < boardSize; ++column) {
+        boardDOM[row].push(screenController.createBox(row, column));
+      };
+    };
+  }
 
   function checkWin(symbol) {
     const wins = [];
-    columns: for (let column = 0; column < 3; ++column) {
-      for (let row = 0; row < 3; ++row) {
+    columns: for (let column = 0; column < boardSize; ++column) {
+      for (let row = 0; row < boardSize; ++row) {
         if (board[row][column] !== symbol) { continue columns; };
       };
       wins.push({ direction: "column", number: column, });
     };
 
-    rows: for (let row = 0; row < 3; ++row) {
+    rows: for (let row = 0; row < boardSize; ++row) {
       for (let box of board[row]) {
         if (box !== symbol) { break rows; };
       };
@@ -26,8 +45,8 @@ const gameboard = (function(size) {
 
     let diag1 = 0, diag2 = 0; // 1 = topLeftToBottomRight, 2 = topRightToBottomLeft
 
-    for (let column = 0; column < 3; ++column) {
-      for (let row = 0; row < 3; ++row) {
+    for (let column = 0; column < boardSize; ++column) {
+      for (let row = 0; row < boardSize; ++row) {
         if (row === column && board[row][column] === symbol) { ++diag1; };
         if (row + column === 2 && board[row][column] === symbol) { ++diag2; };
       };
@@ -42,24 +61,21 @@ const gameboard = (function(size) {
     return wins;
   };
 
-  function resetBoard() {
-    for (let row = 0; row < boardSize; ++row) {
-      for (let column = 0; column < boardSize; ++column) {
-        board[row][column] = "";
+  function playMove(row, column, symbol) {
+    board[row][column] = symbol;
+    boardDOM[row][column].classList.add(symbol);
+  };
+
+  function isFull() {
+    columns: for (let column = 0; column < boardSize; ++column) {
+      for (let row = 0; row < boardSize; ++row) {
+        if (board[row][column] === "") return false;
       };
     };
+    return true;
   };
 
-  function playMove(row, column, symbol) {
-    if (board[row][column] !== "") {
-      return false;
-    } else {
-      board[row][column] = symbol;
-      // then update DOM
-    };
-  };
-
-  return { board, checkWin, playMove, resetBoard };
+  return { board, boardDOM, checkWin, playMove, isFull, createBoard };
 })(3);
 
 createPlayer = function(name, symbol) {
@@ -68,10 +84,87 @@ createPlayer = function(name, symbol) {
 
   function addScore() { ++score; };
   function getScore() { return score; };
+  function getName() { return playerName; };
+  function getSymbol() { return symbol; };
 
-  function playMove(row, column) {
-    gameboard.playMove(row, column, symbol);
+  return { addScore, getScore, getName, getSymbol }
+};
+
+screenController = (function() {
+  const gameboardDisplay = document.querySelector("#gameboard-display");
+  const currentTurnDisplay = document.querySelector("#current-turn");
+
+  function createBox(row, column) {
+    const box = document.createElement("button");
+    box.classList.add("box");
+    box.dataset.column = column;
+    box.dataset.row = row;
+    box.addEventListener("click", evt => boxClickHandler(evt.target));
+    return box;
   };
 
-  return { playerName, playMove, addScore, getScore }
-};
+  function updateScreen() {
+    gameboardDisplay.textContent = "";
+    const boxes = gameboard.boardDOM;
+
+    for (let row of boxes) {
+      for (let box of row) {
+        gameboardDisplay.appendChild(box);
+      };
+    };
+
+    currentTurnDisplay.textContent = gameController.getCurrentPlayer().getName();
+  };
+
+
+  function boxClickHandler(box) {
+    const column = box.dataset.column;
+    const row = box.dataset.row;
+    if (gameboard.board[row][column] == "") gameController.playRound(row, column);
+    else console.log("Box in use");
+  };
+
+  return { createBox, updateScreen, boxClickHandler};
+})();
+
+gameController = (function() {
+  const players = [createPlayer("Tom", "x"), createPlayer("John", "o")];
+  let currentPlayer = 0;
+
+  function startGame() {
+    gameboard.createBoard();
+    screenController.updateScreen();
+  };
+
+  function playRound(row, column) {
+    gameboard.playMove(row, column, getCurrentPlayer().getSymbol());
+    screenController.updateScreen();
+    const wins = gameboard.checkWin(getCurrentPlayer().getSymbol());
+    if (wins.length === 0) {
+      if (gameboard.isFull()) {
+        endGame("draw");
+      } else {
+        changePlayer();
+      };
+    } else {
+      endGame("win");
+    };
+  };
+
+  function changePlayer() { currentPlayer = (currentPlayer + 1) % 2; };
+
+  function endGame(type) { // win or draw
+    if (type === "win") {
+      console.log("win");
+      getCurrentPlayer().addScore();
+    } else {
+      console.log("draw");
+    };
+  };
+
+  function getCurrentPlayer() { return players[currentPlayer]; };
+
+  return { startGame, playRound, changePlayer, getCurrentPlayer, };
+})();
+
+gameController.startGame();
