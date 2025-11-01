@@ -91,8 +91,9 @@ createPlayer = function(name, symbol) {
 };
 
 screenController = (function() {
-  const gameboardDisplay = document.querySelector("#gameboard-display");
+  const gameboardDisplay = document.querySelector(".gameboard-display:not(.copy)");
   const currentTurnDisplay = document.querySelector("#current-turn");
+  const playAgainBtn = document.querySelector(".play-again");
 
   function createBox(row, column) {
     const box = document.createElement("button");
@@ -113,7 +114,7 @@ screenController = (function() {
       };
     };
 
-    currentTurnDisplay.textContent = gameController.getCurrentPlayer().getName();
+    currentTurnDisplay.textContent = `${gameController.getCurrentPlayer().getName()} ${gameController.getCurrentPlayer().getSymbol()}`;
   };
 
 
@@ -124,15 +125,21 @@ screenController = (function() {
     else console.log("Box in use");
   };
 
-  return { createBox, updateScreen, boxClickHandler};
+  playAgainBtn.addEventListener("click", evt => {
+    document.querySelector("#end-screen").close();
+    gameController.startGame();
+  });
+
+  return { createBox, updateScreen, boxClickHandler, gameboardDisplay };
 })();
 
 gameController = (function() {
   const players = [createPlayer("Tom", "x"), createPlayer("John", "o")];
-  let currentPlayer = 0;
+  let currentPlayer;
 
   function startGame() {
     gameboard.createBoard();
+    currentPlayer = 0;
     screenController.updateScreen();
   };
 
@@ -155,16 +162,23 @@ gameController = (function() {
   function changePlayer() { currentPlayer = (currentPlayer + 1) % 2; };
 
   function endGame(type) { // win or draw
+    const endScreen = document.querySelector("#end-screen");
     if (type === "win") {
-      console.log("win");
-      getCurrentPlayer().addScore();
-      // show win dialog
+      const winner = getCurrentPlayer();
+      endScreen.querySelector("h1").textContent = `${winner.getName()} has won!`;
+      winner.addScore();
+      
     } else {
-      console.log("draw");
-      // show draw dialog
+      endScreen.querySelector("h1").textContent = `${players[0].getName()} and ${players[1].getName()} have drawn.`;
     };
-    currentPlayer = 0;
-    startGame();
+
+    const boardCopy = screenController.gameboardDisplay.cloneNode(true);
+    boardCopy.classList.add("copy");
+
+    endScreen.querySelector("div").textContent = "";
+    endScreen.querySelector("div").appendChild(boardCopy);
+
+    endScreen.showModal();
   };
 
   function getCurrentPlayer() { return players[currentPlayer]; };
