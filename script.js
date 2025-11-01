@@ -82,19 +82,21 @@ const gameboard = (function(size) {
 })(3);
 
 createPlayer = function(name, symbol) {
-  const playerName = name;
+  let playerName = name;
   let score = 0;
 
   function addScore() { ++score; };
   function getScore() { return score; };
+  function setName(newName = playerName) { playerName = newName; };
   function getName() { return playerName; };
   function getSymbol() { return symbol; };
 
-  return { addScore, getScore, getName, getSymbol }
+  return { addScore, getScore, getName, setName, getSymbol, }
 };
 
 screenController = (function() {
   const gameboardDisplay = document.querySelector(".gameboard-display:not(.copy)");
+  const changeNameDialog = document.querySelector("#change-name");
 
   function createBox(row, column) {
     const box = document.createElement("button");
@@ -119,10 +121,10 @@ screenController = (function() {
 
   function updatePlayerInfo() {
     document.querySelector("#current-turn").textContent = `${gameController.getCurrentPlayer().getName()} ${gameController.getCurrentPlayer().getSymbol()}`;
-    document.querySelector(".p1.score").textContent = gameController.players[0].getScore();
-    document.querySelector(".p2.score").textContent = gameController.players[1].getScore();
-    document.querySelector(".p1.name").textContent = gameController.players[0].getName();
-    document.querySelector(".p2.name").textContent = gameController.players[1].getName();
+    document.querySelector(".p1.score").textContent = gameController.getPlayer(0).getScore();
+    document.querySelector(".p2.score").textContent = gameController.getPlayer(1).getScore();
+    document.querySelector(".p1.name").textContent = gameController.getPlayer(0).getName();
+    document.querySelector(".p2.name").textContent = gameController.getPlayer(1).getName();
   };
 
 
@@ -138,11 +140,39 @@ screenController = (function() {
     gameController.startGame();
   });
 
-  return { createBox, updateScreen, boxClickHandler, gameboardDisplay };
+  changeNameDialog.querySelector(".submit").addEventListener("click", evt => {
+    evt.preventDefault();
+    const newName = document.querySelector("#new-name").value;
+    const player = gameController.getPlayer(+changeNameDialog.dataset.playerIndex);
+    if (newName.length > 0 && newName !== gameController.getPlayer((+changeNameDialog.dataset.playerIndex + 1) % 2).getName()) {
+      player.setName(newName);
+      changeNameDialog.close();
+      screenController.updateScreen();
+    };
+  });
+
+  changeNameDialog.querySelector(".cancel").addEventListener("click", evt => {
+    evt.preventDefault();
+    changeNameDialog.close();
+    
+  });
+
+  document.querySelectorAll(".edit-name-btn").forEach(btn => {
+    btn.addEventListener("click", evt => {
+      const playerIndex = [...evt.target.classList].includes("p1") ? 0 : 1;
+      const player = gameController.getPlayer(playerIndex);
+      document.querySelector("#new-name").value = player.getName();
+      changeNameDialog.dataset.playerIndex = playerIndex;
+      changeNameDialog.showModal();
+      document.querySelector("#new-name").select();
+      updateScreen();
+    });
+  });
+  return { createBox, updateScreen, boxClickHandler, gameboardDisplay, };
 })();
 
 gameController = (function() {
-  const players = [createPlayer("Tom", "x"), createPlayer("John", "o")];
+  const players = [createPlayer("Player 1", "x"), createPlayer("Player 2", "o")];
   let currentPlayer;
 
   function startGame() {
@@ -191,7 +221,16 @@ gameController = (function() {
 
   function getCurrentPlayer() { return players[currentPlayer]; };
 
-  return { startGame, playRound, changePlayer, getCurrentPlayer, players, };
+  function getPlayer(index) {
+    const newIndex = parseInt(index);
+    if (newIndex < players.length && newIndex >= 0) {
+      return players[newIndex];
+    } else {
+      return false;
+    }
+  };
+
+  return { startGame, playRound, changePlayer, getCurrentPlayer, getPlayer, };
 })();
 
 gameController.startGame();
