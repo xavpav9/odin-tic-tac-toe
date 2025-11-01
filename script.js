@@ -12,6 +12,9 @@ const gameboard = (function(size) {
       boardDOM.pop();
     };
 
+    document.querySelector(".gameboard-display").style.gridTemplateRows = `repeat(${boardSize}, var(--box-size))`;
+    document.querySelector(".gameboard-display").style.gridTemplateColumns = `repeat(${boardSize}, var(--box-size))`;
+
     for (let row = 0; row < boardSize; ++row) {
       board.push([]);
       for (let column = 0; column < boardSize; ++column) {
@@ -92,8 +95,6 @@ createPlayer = function(name, symbol) {
 
 screenController = (function() {
   const gameboardDisplay = document.querySelector(".gameboard-display:not(.copy)");
-  const currentTurnDisplay = document.querySelector("#current-turn");
-  const playAgainBtn = document.querySelector(".play-again");
 
   function createBox(row, column) {
     const box = document.createElement("button");
@@ -113,8 +114,15 @@ screenController = (function() {
         gameboardDisplay.appendChild(box);
       };
     };
+    updatePlayerInfo();
+  };
 
-    currentTurnDisplay.textContent = `${gameController.getCurrentPlayer().getName()} ${gameController.getCurrentPlayer().getSymbol()}`;
+  function updatePlayerInfo() {
+    document.querySelector("#current-turn").textContent = `${gameController.getCurrentPlayer().getName()} ${gameController.getCurrentPlayer().getSymbol()}`;
+    document.querySelector(".p1.score").textContent = gameController.players[0].getScore();
+    document.querySelector(".p2.score").textContent = gameController.players[1].getScore();
+    document.querySelector(".p1.name").textContent = gameController.players[0].getName();
+    document.querySelector(".p2.name").textContent = gameController.players[1].getName();
   };
 
 
@@ -125,7 +133,7 @@ screenController = (function() {
     else console.log("Box in use");
   };
 
-  playAgainBtn.addEventListener("click", evt => {
+  document.querySelector(".play-again").addEventListener("click", evt => {
     document.querySelector("#end-screen").close();
     gameController.startGame();
   });
@@ -183,7 +191,7 @@ gameController = (function() {
 
   function getCurrentPlayer() { return players[currentPlayer]; };
 
-  return { startGame, playRound, changePlayer, getCurrentPlayer, };
+  return { startGame, playRound, changePlayer, getCurrentPlayer, players, };
 })();
 
 gameController.startGame();
