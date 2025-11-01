@@ -38,7 +38,7 @@ const gameboard = (function(size) {
 
     rows: for (let row = 0; row < boardSize; ++row) {
       for (let box of board[row]) {
-        if (box !== symbol) { break rows; };
+        if (box !== symbol) { continue rows; };
       };
       wins.push({ direction: "row", number: row, });
     };
@@ -63,7 +63,7 @@ const gameboard = (function(size) {
 
   function playMove(row, column, symbol) {
     board[row][column] = symbol;
-    boardDOM[row][column].classList.add(symbol);
+    boardDOM[row][column].textContent = symbol;
   };
 
   function isFull() {
@@ -149,6 +149,7 @@ gameController = (function() {
     } else {
       endGame("win");
     };
+    screenController.updateScreen();
   };
 
   function changePlayer() { currentPlayer = (currentPlayer + 1) % 2; };
@@ -157,9 +158,13 @@ gameController = (function() {
     if (type === "win") {
       console.log("win");
       getCurrentPlayer().addScore();
+      // show win dialog
     } else {
       console.log("draw");
+      // show draw dialog
     };
+    currentPlayer = 0;
+    startGame();
   };
 
   function getCurrentPlayer() { return players[currentPlayer]; };
