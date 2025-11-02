@@ -56,9 +56,10 @@ const gameboard = (function(size) {
     };
 
     if (diag1 === boardSize) {
+      wins.push({ direction: "diagonal", number: 0, });
+    }; 
+    if (diag2 === boardSize) {
       wins.push({ direction: "diagonal", number: 1, });
-    } else if (diag2 === boardSize) {
-      wins.push({ direction: "diagonal", number: 2, });
     };
 
     return wins;
@@ -103,7 +104,7 @@ const gameboard = (function(size) {
     return true;
   };
 
-  return { board, boardDOM, checkWin, playMove, isFull, createBoard };
+  return { board, boardDOM, checkWin, playMove, isFull, createBoard, boardSize };
 })(3);
 
 createPlayer = function(name, symbol, colour) {
@@ -228,7 +229,7 @@ screenController = (function() {
 })();
 
 gameController = (function() {
-  const players = [createPlayer("Player 1", "x", "#FF0000"), createPlayer("Player 2", "o", "#00FF00")];
+  const players = [createPlayer("Player 1", "x", "#ff0000"), createPlayer("Player 2", "o", "#0000ff")];
   let currentPlayer;
 
   function startGame() {
@@ -249,25 +250,55 @@ gameController = (function() {
         changePlayer();
       };
     } else {
-      endGame("win");
+      endGame("win", wins);
     };
     screenController.updateScreen();
   };
 
   function changePlayer() { currentPlayer = (currentPlayer + 1) % 2; };
 
-  function endGame(type) { // win or draw
+  function endGame(type, wins = {}) { // win or draw
     const endScreenContent = document.querySelector("#end-screen > div");
+    const boardCopy = screenController.gameboardDisplay.cloneNode(true);
+
     if (type === "win") {
       const winner = getCurrentPlayer();
       endScreenContent.querySelector("h1").textContent = `${winner.getName()} has won!`;
       winner.addScore();
+      console.log(wins);
+
+      const boxes = [...boardCopy.children];
+      for (let win of wins) {
+        switch (win.direction) {
+          case "column":
+            console.log("hi")
+            for (let i = 0; i < gameboard.boardSize; ++i) {
+              boxes[i * gameboard.boardSize + win.number].classList.add("winning");
+            };
+            break;
+          case "row":
+            for (let i = 0; i < gameboard.boardSize; ++i) {
+              boxes[gameboard.boardSize * win.number + i].classList.add("winning");
+            };
+            break;
+          case "diagonal":
+            if (win.number === 0) {
+              for (let i = 0; i < gameboard.boardSize; ++i) {
+                boxes[i * gameboard.boardSize + i].classList.add("winning");
+              };
+            } else {
+              for (let i = 0; i < gameboard.boardSize; ++i) {
+                boxes[gameboard.boardSize * (i + 1) - 1 - i].classList.add("winning");
+              };
+            }
+            break;
+        };
+      };
       
     } else {
       endScreenContent.querySelector("h1").textContent = `${players[0].getName()} and ${players[1].getName()} have drawn.`;
     };
 
-    const boardCopy = screenController.gameboardDisplay.cloneNode(true);
     boardCopy.classList.add("copy");
 
     endScreenContent.querySelector("div").textContent = "";

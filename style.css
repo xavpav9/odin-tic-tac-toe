@@ -66,11 +66,25 @@ body > h1 {
     justify-content: center;
     align-items: center;
 
+    appearance: none;
+    border: thin solid black;
+    border-radius: 2px;
+
+    transition: background-color 0.3s;
+    background-color: #eee;
+    &:hover:empty, &:focus:empty {
+      background-color: #d6a6a6;
+    }
+
+    &:active:empty {
+      background-color: #b88;
+    }
+
     font-size: var(--box-size);
     font-family: "Helvetica", sans-serif;
     font-weight: 700;
 
-    img.loaded) {
+    img.loaded {
       height: calc(var(--box-size) * 3 / 4);
       width: auto;
     }
@@ -101,17 +115,62 @@ dialog {
 }
 
 .gameboard-display.copy {
+  --box-size: 140px;
+
+  button.box, button.box:hover, button.box:focus, button.box:active {
+    background-color: #eee;
+  }
   
+  button.box.winning {
+    background-color: lightgreen;
+  }
 }
 
-#end-screen > div {
-  display: grid;
-  justify-items: center;
-  padding: 20px;
-  border-radius: 5px;
-  border: 2px solid black;
+#end-screen {
+  border-radius: 15px;
+  border: 4px solid black;
+  background-image: linear-gradient(red, 50%, orange);
+
+  & > div {
+    display: grid;
+    justify-items: center;
+    row-gap: 20px;
+    padding: 60px 40px 50px 40px;
+    max-height: 90vh;
+
+    h1 {
+      font-size: 3rem;
+    }
+
+    .play-again {
+      border: thin solid black;
+      border-radius: 4px;
+      padding: 4px 8px;
+      background-color: #0f0;
+      margin-top: 30px;
+
+      font-weight: 700;
+      font-size: 1.2rem;
+
+      &:hover, &:focus { background-color: #0e0; }
+      &:active { background-color: #0d0; }
+    }
+  }
+
+  &[open] {
+    animation: fade-in 0.5s;
+  }
 }
 
 #change-player {
 
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
