@@ -38,17 +38,15 @@
       </div>
     </dialog>
     <dialog id="change-player">
-      <h1>Edit Player</h1>
-      <form method="dialog" action="">
-        <div>
+      <div>
+        <h1>Edit Player</h1>
+        <form method="dialog" action="">
           <label for="new-name">Name: </label>
           <input type="text" name="new-name" id="new-name" required>
-        </div>
-        <div>
+
           <label for="new-colour">Colour: </label>
           <input type="color" name="new-colour" id="new-colour">
-        <div>
-        </div>
+
           <label for="new-symbol">Symbol: </label>
           <select name="new-symbol" id="new-symbol">
             <option value="x">X</option>
@@ -56,13 +54,15 @@
             <option value="+">+</option>
             <option value="=">=</option>
           </select>
-        </div>
-        <p class="errors"></p>
-        <div>
-          <button class="submit">Submit</button>
-          <button class="cancel">Cancel</button>
-        </div>
-      </form>
+
+          <p class="errors"></p>
+
+          <div class="buttons">
+            <button class="submit">Submit</button>
+            <button class="cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
     </dialog>
     <div class="game">
       <div class="gameboard-display">

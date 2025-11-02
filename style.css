@@ -140,20 +140,11 @@ dialog {
 
     h1 {
       font-size: 3rem;
+      text-align: center;
     }
 
     .play-again {
-      border: thin solid black;
-      border-radius: 4px;
-      padding: 4px 8px;
-      background-color: #0f0;
       margin-top: 30px;
-
-      font-weight: 700;
-      font-size: 1.2rem;
-
-      &:hover, &:focus { background-color: #0e0; }
-      &:active { background-color: #0d0; }
     }
   }
 
@@ -162,8 +153,89 @@ dialog {
   }
 }
 
-#change-player {
+#end-screen .play-again, #change-player .submit, #change-player .cancel {
+  border: thin solid black;
+  border-radius: 4px;
+  padding: 4px 8px;
 
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+#end-screen .play-again, #change-player .submit {
+  background-color: #0f0;
+
+  &:hover, &:focus { background-color: #0e0; }
+  &:active { background-color: #0d0; }
+}
+
+#change-player .cancel {
+  background-color: #f00;
+
+  &:hover, &:focus { background-color: #e00; }
+  &:active { background-color: #d00; }
+}
+
+#change-player {
+  border-radius: 15px;
+  border: 4px solid black;
+  background-image: linear-gradient(lightgreen, 50%, yellow);
+  padding: 60px 40px 50px 40px;
+
+  h1 {
+    text-align: center;
+  }
+
+  form {
+    display: grid;
+    grid-template: repeat(4, 50px) / 80px 200px;
+    column-gap: 20px;
+    place-content: center;
+    place-items: center;
+
+    .buttons, .errors {
+      display: flex;
+      grid-column: 1 / span 2;
+    }
+
+    .buttons {
+      justify-self: stretch;
+      justify-content: space-evenly;
+    }
+
+    .errors {
+      color: red;
+      justify-content: center;
+    }
+
+
+    #new-name {
+      appearance: none;
+      width: 100%;
+      padding: 1px 3px;
+      border-radius: 2px;
+      border: thin solid black;
+    }
+
+    #new-colour {
+      border-radius: 2px;
+    }
+
+    #new-symbol {
+      appearance: base-select;
+      border-radius: 2px;
+      border: thin solid black;
+      background-color: #eee;
+      padding: 1px 3px;
+      width: 50%;
+    }
+
+    input, select {
+      &:focus, &:hover {
+        outline: 2px solid lightblue;
+      }
+    }
+  }
 }
 
 @keyframes fade-in {
