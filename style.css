@@ -39,6 +39,10 @@ body > h1 {
   text-align: center;
 }
 
+.resources {
+  display: none;
+}
+
 .game {
   display: flex;
   justify-content: center;
@@ -85,6 +89,10 @@ body > h1 {
     display: grid; 
     grid-template: repeat(3, 50px) / repeat(2, 100px);
     grid-auto-flow: column;
+
+    .name {
+      white-space: pre-wrap;
+    }
   }
 }
 
@@ -104,6 +112,6 @@ dialog {
   border: 2px solid black;
 }
 
-#change-name {
+#change-player {
 
 }

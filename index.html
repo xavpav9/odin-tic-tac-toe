@@ -8,6 +8,27 @@
     <script defer src="script.js"></script>
   </head>
   <body>
+    <div class="resources">
+      <svg class="o" data-symbol="o" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
+        <circle r="3" cx="5" cy="5" fill="transparent" stroke-width="1"/>
+      </svg>
+
+      <svg class="x" data-symbol="x" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="1" stroke-linecap="round" viewBox="0 0 10 10">
+        <line x1="2" y1="2" x2="8" y2="8"/>
+        <line x1="2" y1="8" x2="8" y2="2"/>
+      </svg>
+
+      <svg class="plus" data-symbol="+" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="1" stroke-linecap="round" viewBox="0 0 10 10">
+        <line x1="5" y1="2" x2="5" y2="8"/>
+        <line x1="2" y1="5" x2="8" y2="5"/>
+      </svg>
+
+      <svg class="equal" data-symbol="=" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" viewBox="0 0 20 20">
+        <line x1="4" y1="7" x2="16" y2="7"/>
+        <line x1="4" y1="13" x2="16" y2="13"/>
+      </svg>
+    </div>
+
     <h1>Noughts and Crosses</h1>
     <dialog id="end-screen">
       <div>
@@ -16,13 +37,27 @@
         <button class="play-again">Play Again</button>
       </div>
     </dialog>
-    <dialog id="change-name">
-      <h1>Change name</h1>
+    <dialog id="change-player">
+      <h1>Edit Player</h1>
       <form method="dialog" action="">
         <div>
-          <label for="new-name">New name: </label>
+          <label for="new-name">Name: </label>
           <input type="text" name="new-name" id="new-name" required>
         </div>
+        <div>
+          <label for="new-colour">Colour: </label>
+          <input type="color" name="new-colour" id="new-colour">
+        <div>
+        </div>
+          <label for="new-symbol">Symbol: </label>
+          <select name="new-symbol" id="new-symbol">
+            <option value="x">X</option>
+            <option value="o">O</option>
+            <option value="+">+</option>
+            <option value="=">=</option>
+          </select>
+        </div>
+        <p class="errors"></p>
         <div>
           <button class="submit">Submit</button>
           <button class="cancel">Cancel</button>
@@ -40,10 +75,10 @@
         <div class="content">
           <h2 class="p1 name">Player 1</h2>
           <p class="p1 score">0</p>
-          <button class="p1 edit-name-btn">Edit Name</button>
+          <button class="p1 edit-player-btn">Edit Player</button>
           <h2 class="p2 name">Player 2</h2>
           <p class="p2 score">0</p>
-          <button class="p2 edit-name-btn">Edit Name</button>
+          <button class="p2 edit-player-btn">Edit Player</button>
         </div>
         <div>
           <button class="start-restart">start</button>

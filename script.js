@@ -64,19 +64,34 @@ const gameboard = (function(size) {
     return wins;
   };
 
-  function playMove(row, column, symbol) {
+  function playMove(row, column, player) {
+    const symbol = player.getSymbol();
+    let symbolClass;
+    switch (symbol) {
+      case "+":
+        symbolClass = "plus";
+        break;
+      case "=":
+        symbolClass = "equal";
+        break;
+      default:
+        symbolClass = symbol;
+    };
+    const colour = player.getColour();
+
     board[row][column] = symbol;
-    const img = document.createElement("img");
+    const img = document.querySelector(`.resources .${symbolClass}`).cloneNode(true);
     img.classList.add("loaded");
-    img.alt = "";
-    img.dataset.symbol = symbol;
-    img.src = `images/${symbol}.svg`;
-    img.addEventListener("error", evt => {
-      evt.target.classList.remove("loaded");
-      evt.target.parentNode.textContent = evt.target.dataset.symbol;
-    });
+    img.style.stroke = colour;
+
     boardDOM[row][column].textContent = "";
     boardDOM[row][column].appendChild(img);
+    boardDOM[row][column].style.color = colour;
+
+    img.addEventListener("error", evt => {
+      img.classList.remove("loaded");
+      img.parentNode.textContent = img.dataset.symbol;
+    });
   };
 
   function isFull() {
@@ -91,7 +106,7 @@ const gameboard = (function(size) {
   return { board, boardDOM, checkWin, playMove, isFull, createBoard };
 })(3);
 
-createPlayer = function(name, symbol) {
+createPlayer = function(name, symbol, colour) {
   let playerName = name;
   let score = 0;
 
@@ -99,21 +114,24 @@ createPlayer = function(name, symbol) {
   function getScore() { return score; };
   function setName(newName = playerName) { playerName = newName; };
   function getName() { return playerName; };
+  function setColour(newColour = colour) { colour = newColour; };
+  function getColour() { return colour; };
+  function setSymbol(newSymbol = symbol) { symbol = newSymbol; };
   function getSymbol() { return symbol; };
 
-  return { addScore, getScore, getName, setName, getSymbol, }
+  return { addScore, getScore, setName, getName, setSymbol, getSymbol, setColour, getColour }
 };
 
 screenController = (function() {
   const gameboardDisplay = document.querySelector(".gameboard-display:not(.copy)");
-  const changeNameDialog = document.querySelector("#change-name");
+  const editPlayerDialog = document.querySelector("#change-player");
 
   function createBox(row, column) {
     const box = document.createElement("button");
     box.classList.add("box");
     box.dataset.column = column;
     box.dataset.row = row;
-    box.addEventListener("click", evt => boxClickHandler(evt.target));
+    box.addEventListener("click", evt => boxClickHandler(box));
     return box;
   };
 
@@ -137,12 +155,17 @@ screenController = (function() {
     document.querySelector(".p2.name").textContent = gameController.getPlayer(1).getName();
   };
 
+  function enableEdit(enable) {
+    document.querySelectorAll(".edit-player-btn").forEach(btn => btn.disabled = !enable);
+  };
 
   function boxClickHandler(box) {
     const column = box.dataset.column;
     const row = box.dataset.row;
-    if (gameboard.board[row][column] == "") gameController.playRound(row, column);
-    else console.log("Box in use");
+    if (gameboard.board[row][column] == "") {
+      gameController.playRound(row, column);
+      enableEdit(false);
+    } else console.log("Box in use");
   };
 
   document.querySelector(".play-again").addEventListener("click", evt => {
@@ -150,30 +173,47 @@ screenController = (function() {
     gameController.startGame();
   });
 
-  changeNameDialog.querySelector(".submit").addEventListener("click", evt => {
+  editPlayerDialog.querySelector(".submit").addEventListener("click", evt => {
     evt.preventDefault();
-    const newName = document.querySelector("#new-name").value;
-    const player = gameController.getPlayer(+changeNameDialog.dataset.playerIndex);
-    if (newName.length > 0 && newName !== gameController.getPlayer((+changeNameDialog.dataset.playerIndex + 1) % 2).getName()) {
-      player.setName(newName);
-      changeNameDialog.close();
-      screenController.updateScreen();
-    };
+    const newName = document.querySelector("#new-name").value.trim();
+    const newColour = document.querySelector("#new-colour").value;
+    const newSymbol = document.querySelector("#new-symbol").value;
+    const errorsDisplay = editPlayerDialog.querySelector(".errors");
+    const player = gameController.getPlayer(+editPlayerDialog.dataset.playerIndex);
+
+    if (newName.length > 0 && newName !== gameController.getPlayer((+editPlayerDialog.dataset.playerIndex + 1) % 2).getName()) {
+      if (newSymbol !== gameController.getPlayer((+editPlayerDialog.dataset.playerIndex + 1) % 2).getSymbol()) {
+        player.setName(newName);
+        player.setColour(newColour);
+        player.setSymbol(newSymbol);
+
+        editPlayerDialog.close();
+        screenController.updateScreen();
+      } else {
+        errorsDisplay.textContent = "Invalid symbol";
+        setTimeout(() => errorsDisplay.textContent = "", 1000);
+      }
+    } else {
+      errorsDisplay.textContent = "Invalid name";
+      setTimeout(() => errorsDisplay.textContent = "", 1000);
+    }
   });
 
-  changeNameDialog.querySelector(".cancel").addEventListener("click", evt => {
+  editPlayerDialog.querySelector(".cancel").addEventListener("click", evt => {
     evt.preventDefault();
-    changeNameDialog.close();
+    editPlayerDialog.close();
     
   });
 
-  document.querySelectorAll(".edit-name-btn").forEach(btn => {
+  document.querySelectorAll(".edit-player-btn").forEach(btn => {
     btn.addEventListener("click", evt => {
       const playerIndex = [...evt.target.classList].includes("p1") ? 0 : 1;
       const player = gameController.getPlayer(playerIndex);
       document.querySelector("#new-name").value = player.getName();
-      changeNameDialog.dataset.playerIndex = playerIndex;
-      changeNameDialog.showModal();
+      document.querySelector("#new-colour").value = player.getColour();
+      document.querySelector("#new-symbol").value = player.getSymbol();
+      editPlayerDialog.dataset.playerIndex = playerIndex;
+      editPlayerDialog.showModal();
       document.querySelector("#new-name").select();
       updateScreen();
     });
@@ -184,21 +224,22 @@ screenController = (function() {
     evt.target.textContent = "restart";
     gameController.startGame();
   });
-  return { createBox, updateScreen, boxClickHandler, gameboardDisplay, };
+  return { createBox, updateScreen, boxClickHandler, gameboardDisplay, enableEdit };
 })();
 
 gameController = (function() {
-  const players = [createPlayer("Player 1", "x"), createPlayer("Player 2", "o")];
+  const players = [createPlayer("Player 1", "x", "#FF0000"), createPlayer("Player 2", "o", "#00FF00")];
   let currentPlayer;
 
   function startGame() {
     gameboard.createBoard();
     currentPlayer = Math.floor(Math.random() * 2);
     screenController.updateScreen();
+    screenController.enableEdit(true);
   };
 
   function playRound(row, column) {
-    gameboard.playMove(row, column, getCurrentPlayer().getSymbol());
+    gameboard.playMove(row, column, getCurrentPlayer());
     screenController.updateScreen();
     const wins = gameboard.checkWin(getCurrentPlayer().getSymbol());
     if (wins.length === 0) {
