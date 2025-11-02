@@ -66,7 +66,17 @@ const gameboard = (function(size) {
 
   function playMove(row, column, symbol) {
     board[row][column] = symbol;
-    boardDOM[row][column].textContent = symbol;
+    const img = document.createElement("img");
+    img.classList.add("loaded");
+    img.alt = "";
+    img.dataset.symbol = symbol;
+    img.src = `images/${symbol}.svg`;
+    img.addEventListener("error", evt => {
+      evt.target.classList.remove("loaded");
+      evt.target.parentNode.textContent = evt.target.dataset.symbol;
+    });
+    boardDOM[row][column].textContent = "";
+    boardDOM[row][column].appendChild(img);
   };
 
   function isFull() {
@@ -206,23 +216,23 @@ gameController = (function() {
   function changePlayer() { currentPlayer = (currentPlayer + 1) % 2; };
 
   function endGame(type) { // win or draw
-    const endScreen = document.querySelector("#end-screen");
+    const endScreenContent = document.querySelector("#end-screen > div");
     if (type === "win") {
       const winner = getCurrentPlayer();
-      endScreen.querySelector("h1").textContent = `${winner.getName()} has won!`;
+      endScreenContent.querySelector("h1").textContent = `${winner.getName()} has won!`;
       winner.addScore();
       
     } else {
-      endScreen.querySelector("h1").textContent = `${players[0].getName()} and ${players[1].getName()} have drawn.`;
+      endScreenContent.querySelector("h1").textContent = `${players[0].getName()} and ${players[1].getName()} have drawn.`;
     };
 
     const boardCopy = screenController.gameboardDisplay.cloneNode(true);
     boardCopy.classList.add("copy");
 
-    endScreen.querySelector("div").textContent = "";
-    endScreen.querySelector("div").appendChild(boardCopy);
+    endScreenContent.querySelector("div").textContent = "";
+    endScreenContent.querySelector("div").appendChild(boardCopy);
 
-    endScreen.showModal();
+    document.querySelector("#end-screen").showModal();
   };
 
   function getCurrentPlayer() { return players[currentPlayer]; };

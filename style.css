@@ -29,14 +29,81 @@
   font-family: inherit;
 }
 
+body {
+  background-image: linear-gradient(to right, #FF000058, 50%, #00000088), linear-gradient(#00F, 30%, #528);
+  min-height: 100vh;
+}
+
+body > h1 {
+  color: white;
+  text-align: center;
+}
+
+.game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  height: 80vh;
+}
+
 .gameboard-display {
-  --box-size: 50px;
+  --box-size: 120px;
   display: none;
+  gap: 5px;
   grid-template-rows: repeat(3, var(--box-size));
   grid-template-columns: repeat(3, var(--box-size));
-  .box { }
+
+  border: 2px solid blue;
+  background-color: black;
+  padding: 5px;
+  .box { 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: var(--box-size);
+    font-family: "Helvetica", sans-serif;
+    font-weight: 700;
+
+    img.loaded) {
+      height: calc(var(--box-size) * 3 / 4);
+      width: auto;
+    }
+  }
+}
+
+.panel {
+  background-color: #353;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid black;
+  box-shadow: 0px 0px 10px white;
+  color: white;
+
+  .content {
+    display: grid; 
+    grid-template: repeat(3, 50px) / repeat(2, 100px);
+    grid-auto-flow: column;
+  }
 }
 
 dialog {
   margin: auto;
+}
+
+.gameboard-display.copy {
+  
+}
+
+#end-screen > div {
+  display: grid;
+  justify-items: center;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid black;
+}
+
+#change-name {
+
 }

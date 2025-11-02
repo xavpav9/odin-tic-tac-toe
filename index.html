@@ -10,9 +10,11 @@
   <body>
     <h1>Noughts and Crosses</h1>
     <dialog id="end-screen">
-      <h1></h1>
-      <div></div>
-      <button class="play-again">Play Again</button>
+      <div>
+        <h1></h1>
+        <div></div>
+        <button class="play-again">Play Again</button>
+      </div>
     </dialog>
     <dialog id="change-name">
       <h1>Change name</h1>
@@ -27,13 +29,14 @@
         </div>
       </form>
     </dialog>
-    <div class="gameboard-display">
-
-    </div>
-    <div class="panel">
-      <div id="current-turn">
+    <div class="game">
+      <div class="gameboard-display">
 
       </div>
+      <div class="panel">
+        <div id="current-turn">
+
+        </div>
         <div class="content">
           <h2 class="p1 name">Player 1</h2>
           <p class="p1 score">0</p>
@@ -42,8 +45,9 @@
           <p class="p2 score">0</p>
           <button class="p2 edit-name-btn">Edit Name</button>
         </div>
-      <div>
-        <button class="start-restart">start</button>
+        <div>
+          <button class="start-restart">start</button>
+        </div>
       </div>
     </div>
   </body>
