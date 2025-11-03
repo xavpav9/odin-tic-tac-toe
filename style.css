@@ -47,7 +47,7 @@ body > h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 80px;
   height: 80vh;
 }
 
@@ -92,6 +92,9 @@ body > h1 {
 }
 
 .panel {
+  display: grid;
+  place-items: center;
+
   background-color: #353;
   padding: 20px;
   border-radius: 8px;
@@ -99,13 +102,66 @@ body > h1 {
   box-shadow: 0px 0px 10px white;
   color: white;
 
+  .start-restart {
+    text-transform: capitalize;
+  }
+
   .content {
     display: grid; 
-    grid-template: repeat(3, 50px) / repeat(2, 100px);
+    grid-template: 50px repeat(4, 75px) / repeat(2, 200px);
+    place-items: center;
+    place-content: center;
     grid-auto-flow: column;
+    row-gap: 10px;
+
+    .pointer {
+      height: 75px;
+      width: auto;
+      visibility: hidden;
+    }
+
+    &[data-current-turn="1"] {
+      .p1.pointer {
+        visibility: visible;
+      }
+    }
+
+    &[data-current-turn="2"] {
+      .p2.pointer {
+        visibility: visible;
+      }
+    }
 
     .name {
       white-space: pre-wrap;
+      font-size: 1.5rem;
+    }
+
+    .symbol {
+      background-color: white;
+      border-radius: 2px;
+      svg {
+        height: 75px;
+        width: auto;
+      }
+    }
+
+    .name, .score {
+      text-align: center;
+    }
+
+    .score {
+      &::before { content: "Score: "; }
+    }
+
+    .edit-player-btn {
+      background-color: #fa0;
+      margin-bottom: 20px;
+
+      &:hover { background-color: #e90; }
+      &:active { background-color: #d80; }
+      &:disabled { background-color: #c99; }
+      font-size: 1rem;
     }
   }
 }
@@ -153,26 +209,27 @@ dialog {
   }
 }
 
-#end-screen .play-again, #change-player .submit, #change-player .cancel {
+#end-screen .play-again, #change-player .submit, #change-player .cancel, .panel .edit-player-btn, .panel .start-restart {
   border: thin solid black;
   border-radius: 4px;
   padding: 4px 8px;
+  transition: background-color 0.3s;
 
   font-weight: 700;
   font-size: 1.2rem;
 }
 
-#end-screen .play-again, #change-player .submit {
+#end-screen .play-again, #change-player .submit, .panel .start-restart {
   background-color: #0f0;
 
-  &:hover, &:focus { background-color: #0e0; }
+  &:hover { background-color: #0e0; }
   &:active { background-color: #0d0; }
 }
 
-#change-player .cancel {
+#change-player .cancel, .panel .start-restart.restart {
   background-color: #f00;
 
-  &:hover, &:focus { background-color: #e00; }
+  &:hover { background-color: #e00; }
   &:active { background-color: #d00; }
 }
 
@@ -182,8 +239,13 @@ dialog {
   background-image: linear-gradient(lightgreen, 50%, yellow);
   padding: 60px 40px 50px 40px;
 
+  &[open] {
+    animation: fade-in 0.3s;
+  }
+
   h1 {
     text-align: center;
+    margin-bottom: 30px;
   }
 
   form {
@@ -231,8 +293,13 @@ dialog {
     }
 
     input, select {
+      font-family: "Roboto", system-ui, sans-serif;
       &:focus, &:hover {
         outline: 2px solid lightblue;
+      }
+      &:invalid {
+        background-color: pink;
+        border-color: red;
       }
     }
   }

@@ -42,7 +42,7 @@
         <h1>Edit Player</h1>
         <form method="dialog" action="">
           <label for="new-name">Name: </label>
-          <input type="text" name="new-name" id="new-name" required>
+          <input type="text" name="new-name" id="new-name" required maxlength="16">
 
           <label for="new-colour">Colour: </label>
           <input type="color" name="new-colour" id="new-colour">
@@ -69,14 +69,15 @@
 
       </div>
       <div class="panel">
-        <div id="current-turn">
-
-        </div>
         <div class="content">
+          <img class="p1 pointer" alt="current turn" src="images/pointer.svg"></img>
           <h2 class="p1 name">Player 1</h2>
+          <div class="p1 symbol"></div>
           <p class="p1 score">0</p>
           <button class="p1 edit-player-btn">Edit Player</button>
+          <img class="p2 pointer" alt="current turn" src="images/pointer.svg"></img>
           <h2 class="p2 name">Player 2</h2>
+          <div class="p2 symbol"></div>
           <p class="p2 score">0</p>
           <button class="p2 edit-player-btn">Edit Player</button>
         </div>

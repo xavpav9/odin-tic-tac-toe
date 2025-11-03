@@ -149,11 +149,42 @@ screenController = (function() {
   };
 
   function updatePlayerInfo() {
-    document.querySelector("#current-turn").textContent = `${gameController.getCurrentPlayer().getName()} ${gameController.getCurrentPlayer().getSymbol()}`;
+    if (document.querySelector(".start-restart.restart") != null) document.querySelector(".panel .content").dataset.currentTurn = gameController.getCurrentPlayer("index") + 1;
     document.querySelector(".p1.score").textContent = gameController.getPlayer(0).getScore();
     document.querySelector(".p2.score").textContent = gameController.getPlayer(1).getScore();
     document.querySelector(".p1.name").textContent = gameController.getPlayer(0).getName();
     document.querySelector(".p2.name").textContent = gameController.getPlayer(1).getName();
+
+    for (let playerIndex = 0; playerIndex < 2; ++playerIndex) {
+      const player = gameController.getPlayer(playerIndex);
+      const element = document.querySelector(`.p${playerIndex + 1}.symbol`);
+      const symbol = player.getSymbol();
+      let symbolClass;
+      switch (symbol) {
+        case "+":
+          symbolClass = "plus";
+          break;
+        case "=":
+          symbolClass = "equal";
+          break;
+        default:
+          symbolClass = symbol;
+      };
+      const colour = player.getColour();
+
+      const img = document.querySelector(`.resources .${symbolClass}`).cloneNode(true);
+      img.classList.add("loaded");
+      img.style.stroke = colour;
+
+      element.textContent = "";
+      element.appendChild(img);
+      element.style.color = colour;
+
+      img.addEventListener("error", evt => {
+        img.classList.remove("loaded");
+        img.parentNode.textContent = img.dataset.symbol;
+      });
+    };
   };
 
   function enableEdit(enable) {
@@ -223,6 +254,7 @@ screenController = (function() {
   document.querySelector(".start-restart").addEventListener("click", evt => {
     gameboardDisplay.style.display = "grid";
     evt.target.textContent = "restart";
+    evt.target.classList.add("restart");
     gameController.startGame();
   });
   return { createBox, updateScreen, boxClickHandler, gameboardDisplay, enableEdit };
@@ -231,10 +263,12 @@ screenController = (function() {
 gameController = (function() {
   const players = [createPlayer("Player 1", "x", "#ff0000"), createPlayer("Player 2", "o", "#0000ff")];
   let currentPlayer;
+  let oldCurrentPlayer = 0;
 
   function startGame() {
     gameboard.createBoard();
-    currentPlayer = Math.floor(Math.random() * 2);
+    currentPlayer = (oldCurrentPlayer + 1) % 2;
+    oldCurrentPlayer = currentPlayer;
     screenController.updateScreen();
     screenController.enableEdit(true);
   };
@@ -307,7 +341,13 @@ gameController = (function() {
     document.querySelector("#end-screen").showModal();
   };
 
-  function getCurrentPlayer() { return players[currentPlayer]; };
+  function getCurrentPlayer(type="object") { 
+    if (type === "object") {
+      return players[currentPlayer]; 
+    } else if (type === "index") {
+      return currentPlayer;
+    };
+  };
 
   function getPlayer(index) {
     const newIndex = parseInt(index);
@@ -318,7 +358,7 @@ gameController = (function() {
     }
   };
 
-  return { startGame, playRound, changePlayer, getCurrentPlayer, getPlayer, };
+  return { startGame, playRound, changePlayer, getCurrentPlayer, getPlayer };
 })();
 
 gameController.startGame();
