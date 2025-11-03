@@ -30,13 +30,20 @@
 }
 
 body {
+  box-sizing: border-box;
   background-image: linear-gradient(to right, #FF000058, 50%, #00000088), linear-gradient(#00F, 30%, #528);
+  background-attachment: fixed;
   min-height: 100vh;
+  padding: 20px 20px 50px 20px;
 }
 
 body > h1 {
   color: white;
   text-align: center;
+}
+
+button {
+  cursor: pointer;
 }
 
 .resources {
@@ -48,7 +55,8 @@ body > h1 {
   justify-content: center;
   align-items: center;
   gap: 80px;
-  height: 80vh;
+  height: 75vh;
+  margin-top: 80px;
 }
 
 .gameboard-display {
@@ -134,6 +142,7 @@ body > h1 {
 
     .name {
       white-space: pre-wrap;
+      overflow-wrap: anywhere;
       font-size: 1.5rem;
     }
 
@@ -175,6 +184,7 @@ dialog {
 
   button.box, button.box:hover, button.box:focus, button.box:active {
     background-color: #eee;
+    cursor: default;
   }
   
   button.box.winning {
@@ -311,5 +321,30 @@ dialog {
   }
   to {
     opacity: 1;
+  }
+}
+
+@media (max-width: 1000px) {
+  .game {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .gameboard-display {
+    --box-size: 20vw;
+  }
+
+  .gameboard-display.copy {
+    --box-size: 20vw;
+  }
+
+  .panel .content {
+    grid-template-columns: repeat(2, 35vw);
+
+    .name {
+      font-size: 1.2rem;
+    }
   }
 }
