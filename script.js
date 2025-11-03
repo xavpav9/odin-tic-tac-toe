@@ -219,7 +219,7 @@ screenController = (function() {
     gameController.startGame();
   });
 
-  editPlayerDialog.querySelector(".submit").addEventListener("click", evt => {
+  editPlayerDialog.querySelector(".save").addEventListener("click", evt => {
     evt.preventDefault();
     const newName = document.querySelector("#new-name").value.trim();
     const newColour = document.querySelector("#new-colour").value;
@@ -281,6 +281,8 @@ screenController = (function() {
       evt.target.classList.add("default-green-btn");
       document.querySelector(".panel .content").dataset.currentTurn = 0;
     };
+
+    enableEdit(true);
   });
 
   document.querySelectorAll(".board-size-selector button").forEach(btn => {

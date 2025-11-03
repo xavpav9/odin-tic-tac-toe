@@ -339,6 +339,7 @@ dialog {
     }
 
     #new-colour {
+      cursor: pointer;
       border-radius: 2px;
     }
 
