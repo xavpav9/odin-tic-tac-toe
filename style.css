@@ -42,10 +42,6 @@ body > h1 {
   text-align: center;
 }
 
-button {
-  cursor: pointer;
-}
-
 .resources {
   display: none;
 }
@@ -60,7 +56,11 @@ button {
 }
 
 .gameboard-display {
-  --box-size: 120px;
+  --board-size: 3;
+  --gap-size: 5px;
+  --box-size: calc(clamp(400px, 35vw, 500px) / var(--board-size));
+
+  box-sizing: border-box;
   display: none;
   gap: 5px;
   grid-template-rows: repeat(3, var(--box-size));
@@ -77,6 +77,7 @@ button {
     appearance: none;
     border: thin solid black;
     border-radius: 2px;
+    cursor: pointer;
 
     transition: background-color 0.3s;
     background-color: #eee;
@@ -101,7 +102,7 @@ button {
 
 .panel {
   display: grid;
-  place-items: center;
+  grid-template-columns: 1fr;
 
   background-color: #353;
   padding: 20px;
@@ -110,8 +111,45 @@ button {
   box-shadow: 0px 0px 10px white;
   color: white;
 
-  .start-restart {
-    text-transform: capitalize;
+  .options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    .start-restart {
+      text-transform: capitalize;
+    }
+
+    .board-size-selector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0px;
+
+      button {
+        text-decoration: none;
+        border-left: none;
+        border-right: none;
+        border-radius: 0px;
+
+        &:last-child {
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
+          border-right: thin solid black;
+        }
+
+        &:first-child {
+          border-top-left-radius: 5px;
+          border-bottom-left-radius: 5px;
+          border-left: thin solid black;
+        }
+
+        &.selected {
+          text-decoration: underline;
+        }
+      }
+    }
   }
 
   .content {
@@ -164,12 +202,7 @@ button {
     }
 
     .edit-player-btn {
-      background-color: #fa0;
       margin-bottom: 20px;
-
-      &:hover { background-color: #e90; }
-      &:active { background-color: #d80; }
-      &:disabled { background-color: #c99; }
       font-size: 1rem;
     }
   }
@@ -180,7 +213,7 @@ dialog {
 }
 
 .gameboard-display.copy {
-  --box-size: 140px;
+  --box-size: calc(clamp(300px, 40vw, 450px) / var(--board-size));
 
   button.box, button.box:hover, button.box:focus, button.box:active {
     background-color: #eee;
@@ -219,7 +252,9 @@ dialog {
   }
 }
 
-#end-screen .play-again, #change-player .submit, #change-player .cancel, .panel .edit-player-btn, .panel .start-restart {
+.default-btn-styling {
+  cursor: pointer;
+
   border: thin solid black;
   border-radius: 4px;
   padding: 4px 8px;
@@ -227,20 +262,34 @@ dialog {
 
   font-weight: 700;
   font-size: 1.2rem;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
-#end-screen .play-again, #change-player .submit, .panel .start-restart {
+.default-green-btn {
   background-color: #0f0;
 
   &:hover { background-color: #0e0; }
   &:active { background-color: #0d0; }
+  &:disabled { background-color: #8d8; }
 }
 
-#change-player .cancel, .panel .start-restart.restart {
+.default-red-btn {
   background-color: #f00;
 
   &:hover { background-color: #e00; }
   &:active { background-color: #d00; }
+  &:disabled { background-color: #d77; }
+}
+
+.default-orange-btn {
+  background-color: #fa0;
+
+  &:hover { background-color: #e90; }
+  &:active { background-color: #d80; }
+  &:disabled { background-color: #c99; }
 }
 
 #change-player {
@@ -333,11 +382,11 @@ dialog {
 
 @media (max-width: 600px) {
   .gameboard-display {
-    --box-size: 20vw;
+    --box-size: calc(80vw / var(--board-size));
   }
 
   .gameboard-display.copy {
-    --box-size: 20vw;
+    --box-size: calc(65vw / var(--board-size));
   }
 
   .panel .content {

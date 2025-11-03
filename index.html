@@ -34,7 +34,7 @@
       <div>
         <h1></h1>
         <div></div>
-        <button class="play-again">Play Again</button>
+        <button class="play-again default-btn-styling default-green-btn">Play Again</button>
       </div>
     </dialog>
     <dialog id="change-player">
@@ -58,8 +58,8 @@
           <p class="errors"></p>
 
           <div class="buttons">
-            <button class="submit">Submit</button>
-            <button class="cancel">Cancel</button>
+            <button class="submit default-btn-styling default-green-btn">Submit</button>
+            <button class="cancel default-btn-styling default-red-btn">Cancel</button>
           </div>
         </form>
       </div>
@@ -74,15 +74,21 @@
           <h2 class="p1 name">Player 1</h2>
           <div class="p1 symbol"></div>
           <p class="p1 score">0</p>
-          <button class="p1 edit-player-btn">Edit Player</button>
+          <button class="p1 edit-player-btn default-btn-styling default-orange-btn">Edit Player</button>
+
           <img class="p2 pointer" alt="current turn" src="images/pointer.svg"></img>
           <h2 class="p2 name">Player 2</h2>
           <div class="p2 symbol"></div>
           <p class="p2 score">0</p>
-          <button class="p2 edit-player-btn">Edit Player</button>
+          <button class="p2 edit-player-btn default-btn-styling default-orange-btn">Edit Player</button>
         </div>
-        <div>
-          <button class="start-restart">start</button>
+        <div class="options">
+          <button class="start-restart default-btn-styling default-green-btn">start</button>
+          <div class="board-size-selector">
+            <button class="default-btn-styling default-green-btn size-3 selected" data-size="3">3</button>
+            <button class="default-btn-styling default-orange-btn size-4" data-size="4">4</button>
+            <button class="default-btn-styling default-red-btn size-5" data-size="5">5</button>
+          </div>
         </div>
       </div>
     </div>

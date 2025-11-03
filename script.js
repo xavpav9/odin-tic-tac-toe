@@ -1,7 +1,7 @@
 const gameboard = (function(size) {
   const board = [];
   const boardDOM = [];
-  const boardSize = size;
+  let boardSize = size;
 
   function createBoard() {
     while (board.length !== 0) {
@@ -12,8 +12,10 @@ const gameboard = (function(size) {
       boardDOM.pop();
     };
 
-    document.querySelector(".gameboard-display").style.gridTemplateRows = `repeat(${boardSize}, var(--box-size))`;
-    document.querySelector(".gameboard-display").style.gridTemplateColumns = `repeat(${boardSize}, var(--box-size))`;
+    document.querySelector(".gameboard-display:not(.copy)").textContent = "";
+    document.querySelector(".gameboard-display:not(.copy)").style.setProperty("--board-size", boardSize);
+    document.querySelector(".gameboard-display:not(.copy)").style.gridTemplateRows = `repeat(${boardSize}, var(--box-size))`;
+    document.querySelector(".gameboard-display:not(.copy)").style.gridTemplateColumns = `repeat(${boardSize}, var(--box-size))`;
 
     for (let row = 0; row < boardSize; ++row) {
       board.push([]);
@@ -28,7 +30,18 @@ const gameboard = (function(size) {
         boardDOM[row].push(screenController.createBox(row, column));
       };
     };
-  }
+  };
+
+  function setBoardSize(newBoardSize = boardSize) {
+    document.querySelectorAll(".board-size-selector button").forEach(btn => btn.classList.remove("selected"));
+    document.querySelector(`.board-size-selector button.size-${newBoardSize}`).classList.add("selected");
+
+    boardSize = +newBoardSize;
+    createBoard();
+    screenController.updateScreen();
+  };
+
+  function getBoardSize() { return boardSize; };
 
   function checkWin(symbol) {
     const wins = [];
@@ -51,7 +64,7 @@ const gameboard = (function(size) {
     for (let column = 0; column < boardSize; ++column) {
       for (let row = 0; row < boardSize; ++row) {
         if (row === column && board[row][column] === symbol) { ++diag1; };
-        if (row + column === 2 && board[row][column] === symbol) { ++diag2; };
+        if (row + column === boardSize - 1 && board[row][column] === symbol) { ++diag2; };
       };
     };
 
@@ -104,7 +117,7 @@ const gameboard = (function(size) {
     return true;
   };
 
-  return { board, boardDOM, checkWin, playMove, isFull, createBoard, boardSize };
+  return { board, boardDOM, checkWin, playMove, isFull, createBoard, setBoardSize, getBoardSize, };
 })(3);
 
 createPlayer = function(name, symbol, colour) {
@@ -189,6 +202,7 @@ screenController = (function() {
 
   function enableEdit(enable) {
     document.querySelectorAll(".edit-player-btn").forEach(btn => btn.disabled = !enable);
+    document.querySelectorAll(".board-size-selector button").forEach(btn => btn.disabled = !enable);
   };
 
   function boxClickHandler(box) {
@@ -255,8 +269,18 @@ screenController = (function() {
     gameboardDisplay.style.display = "grid";
     evt.target.textContent = "restart";
     evt.target.classList.add("restart");
+    evt.target.classList.add("default-red-btn");
+    evt.target.classList.remove("default-green-btn");
     gameController.startGame();
   });
+
+  document.querySelectorAll(".board-size-selector button").forEach(btn => {
+    btn.addEventListener("click", evt => {
+      const newBoardSize = btn.dataset.size;
+      gameboard.setBoardSize(newBoardSize);
+    });
+  });
+
   return { createBox, updateScreen, boxClickHandler, gameboardDisplay, enableEdit };
 })();
 
@@ -277,6 +301,7 @@ gameController = (function() {
     gameboard.playMove(row, column, getCurrentPlayer());
     screenController.updateScreen();
     const wins = gameboard.checkWin(getCurrentPlayer().getSymbol());
+    console.log(wins);
     if (wins.length === 0) {
       if (gameboard.isFull()) {
         endGame("draw");
@@ -299,30 +324,28 @@ gameController = (function() {
       const winner = getCurrentPlayer();
       endScreenContent.querySelector("h1").textContent = `${winner.getName()} has won!`;
       winner.addScore();
-      console.log(wins);
 
       const boxes = [...boardCopy.children];
       for (let win of wins) {
         switch (win.direction) {
           case "column":
-            console.log("hi")
-            for (let i = 0; i < gameboard.boardSize; ++i) {
-              boxes[i * gameboard.boardSize + win.number].classList.add("winning");
+            for (let i = 0; i < gameboard.getBoardSize(); ++i) {
+              boxes[i * gameboard.getBoardSize() + win.number].classList.add("winning");
             };
             break;
           case "row":
-            for (let i = 0; i < gameboard.boardSize; ++i) {
-              boxes[gameboard.boardSize * win.number + i].classList.add("winning");
+            for (let i = 0; i < gameboard.getBoardSize(); ++i) {
+              boxes[gameboard.getBoardSize() * win.number + i].classList.add("winning");
             };
             break;
           case "diagonal":
             if (win.number === 0) {
-              for (let i = 0; i < gameboard.boardSize; ++i) {
-                boxes[i * gameboard.boardSize + i].classList.add("winning");
+              for (let i = 0; i < gameboard.getBoardSize(); ++i) {
+                boxes[i * gameboard.getBoardSize() + i].classList.add("winning");
               };
             } else {
-              for (let i = 0; i < gameboard.boardSize; ++i) {
-                boxes[gameboard.boardSize * (i + 1) - 1 - i].classList.add("winning");
+              for (let i = 0; i < gameboard.getBoardSize(); ++i) {
+                boxes[gameboard.getBoardSize() * (i + 1) - 1 - i].classList.add("winning");
               };
             }
             break;
