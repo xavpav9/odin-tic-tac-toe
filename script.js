@@ -266,12 +266,21 @@ screenController = (function() {
   });
 
   document.querySelector(".start-restart").addEventListener("click", evt => {
-    gameboardDisplay.style.display = "grid";
-    evt.target.textContent = "restart";
-    evt.target.classList.add("restart");
-    evt.target.classList.add("default-red-btn");
-    evt.target.classList.remove("default-green-btn");
-    gameController.startGame();
+    if (evt.target.textContent === "start") {
+      gameboardDisplay.style.display = "grid";
+      evt.target.textContent = "restart";
+      evt.target.classList.add("restart");
+      evt.target.classList.add("default-red-btn");
+      evt.target.classList.remove("default-green-btn");
+      gameController.startGame();
+    } else {
+      gameboardDisplay.style.display = "none";
+      evt.target.textContent = "start";
+      evt.target.classList.remove("restart");
+      evt.target.classList.remove("default-red-btn");
+      evt.target.classList.add("default-green-btn");
+      document.querySelector(".panel .content").dataset.currentTurn = 0;
+    };
   });
 
   document.querySelectorAll(".board-size-selector button").forEach(btn => {
